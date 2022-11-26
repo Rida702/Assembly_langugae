@@ -1,0 +1,94 @@
+.model small 
+.stack 100h
+.data
+
+str1 db "Enter First Number :$"
+str2 db "Enter Second Number :$"
+str3 db "Difference is :$"
+
+.code
+main proc
+
+		mov Ax, @data
+		mov Ds, Ax
+		
+		mov Dx, offset str1
+		mov Ah, 09h
+		INT 21h
+
+		CALL decimalinput
+		mov Cx,Bx
+
+		mov Dx, offset str2
+		mov Ah, 09h
+		INT 21h
+
+		CALL decimalinput
+
+		SUB Bx, Cx
+
+		mov Dx, offset str3
+		mov Ah, 09h
+		INT 21h	
+
+		mov Ax, Bx
+		CALL printdifference
+
+		mov Ah, 4ch
+		INT 21h
+
+main endp
+
+		decimalinput proc
+
+again:		mov Ah, 01h
+		INT 21h
+		
+		cmp Al, 13
+		JE next
+
+		SUB Al, 48d
+		AND Ax, 000Fh
+
+		PUSH Ax
+		mov Ax, 10
+
+		MUL Bx
+		POP Bx
+
+		ADD Bx,Ax
+
+		jmp again
+
+next:		ret
+
+		decimalinput endp
+
+		printdifference proc
+
+		mov Cx, 0
+
+aa2:		cmp Ax, 0
+		JE aa3
+
+		mov Bx, 10
+		mov Dx, 0
+
+		Div Bx
+		Push Dx
+		INC Cx
+
+		jmp aa2
+
+aa3:		POP Dx
+		Add Dl,48
+
+		mov Ah, 02h
+		INT 21h
+
+		DEC Cx
+		JNZ aa3
+
+		printdifference endp
+
+end main

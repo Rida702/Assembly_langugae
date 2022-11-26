@@ -1,0 +1,53 @@
+.model small 
+.stack 100h
+.data
+
+str1 db "Enter a key :$"
+str2 db 10,13,"The Ascii code is :$"
+
+.code
+main proc
+
+		mov Ax, @data
+		mov Ds, Ax
+		
+		mov Dx, offset str1
+		mov Ah, 09h
+		INT 21h
+		      
+		mov Ah, 01h
+		INT 21h 
+
+		mov Cx,0
+		
+again:		cmp Al, 0	 
+		JE aa1
+
+		mov Bl, 10
+		mov Ah, 0
+
+		Div Bl
+		Push Ax
+
+		INC Cx
+		jmp again 		
+
+aa1:		mov Dx, offset str2
+		mov Ah, 09h
+		INT 21h
+
+print:		POP Ax
+		mov Dl,Ah
+		ADD Dl,48
+
+		mov Ah,02h
+		INT 21h
+
+		DEC Cx
+		JNZ print
+
+		mov Ah, 4ch
+		INT 21h
+
+main endp
+end main
