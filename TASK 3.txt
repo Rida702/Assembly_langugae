@@ -1,0 +1,108 @@
+.model small
+.stack 100h
+.data
+
+str1 db "Enter number of seconds in range (0-65535) : $"
+str2 db "Hours : $"
+str3 db "Minutes : $"
+str4 db "Seconds : $"
+
+.code
+ 
+main proc
+		mov Ax, @data
+		mov Ds, Ax
+
+		mov Dx, offset str1
+		mov Ah, 09h
+		INT 21h
+
+		CALL decimalinput
+
+		mov Ax, Bx
+		mov Bx, 3600
+
+		mov Dx, offset str2
+		mov Ah, 09h
+		INT 21h
+
+		CALL printtime
+
+		mov Bx, 60
+		POP Ax
+
+		mov Dx, offset str3
+		mov Ah, 09h
+		INT 21h
+
+		CALL printtime
+
+		mov Bx, 1
+		POP Ax
+
+		mov Dx, offset str4
+		mov Ah, 09h
+		INT 21h
+
+		CALL printtime
+		
+
+		mov Ah, 4ch
+		INT 21h
+main endp
+
+		decimalinput proc
+
+again:		mov Ah, 01h
+		INT 21h
+		
+		cmp Al, 13
+		JE next
+
+		SUB Al, 48d
+		AND Ax, 000Fh
+
+		PUSH Ax
+		mov Ax, 10
+
+		MUL Bx
+		POP Bx
+
+		ADD Bx,Ax
+
+		jmp again
+
+next:		ret
+
+		decimalinput endp
+
+		printtime proc
+
+		
+		mov Cx, 0
+
+aa3:		cmp Ax, 0
+		JE aa1
+
+		mov Dx, 0
+
+		Div Bx
+		Push Dx
+		Push Ax
+
+		INC Cx
+		jmp aa3
+
+aa1:		POP Ax
+		mov Dx, Ax
+		Add Dl,48
+
+		mov Ah, 02h
+		INT 21h	
+
+		DEC Cx
+		JNZ aa1
+
+		printtime endp
+
+end main
